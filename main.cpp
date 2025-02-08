@@ -1,10 +1,37 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <bitset>
 
 #define SIZE_MEMORY 0xFFFF
 uint8_t memory[SIZE_MEMORY];
+
+#define HALT 0xFFFF
+
+typedef struct
+{
+    uint16_t PC = 0x0000;
+    uint16_t IR;
+    uint16_t SP = 0x8600;
+    uint16_t R[8];
+    uint8_t C : 1;
+    uint8_t Ov : 1;
+    uint8_t Z : 1;
+    uint8_t S : 1;
+} CPU;
+
+void cicloDeInstrucao(CPU &cpu)
+{
+    for (int i = 0; i < 30; i++)
+    {
+        cpu.IR = memory[cpu.PC++] + (memory[cpu.PC++] << 8);
+        printf("PC: 0x%04X, IR: 0x%04X\n", cpu.PC, cpu.IR);
+
+        if (cpu.IR == HALT)
+        {
+            break;
+        }
+    }
+}
 
 void carregarMemoria(char *file_name)
 {
@@ -40,9 +67,6 @@ int main(int argc, char *argv[])
 
     carregarMemoria(argv[1]);
 
-    for (int i = 0; i <= SIZE_MEMORY; i++)
-    {
-        if (memory[i])
-            printf("0x%04X: 0x%02X\n", i, memory[i]);
-    }
+    CPU cpu;
+    cicloDeInstrucao(cpu);
 }
