@@ -5,8 +5,6 @@
 #define SIZE_MEMORY 0xFFFF
 uint8_t memory[SIZE_MEMORY];
 
-#define HALT 0xFFFF
-
 typedef struct
 {
     uint16_t PC = 0x0000;
@@ -19,15 +17,49 @@ typedef struct
     uint8_t S : 1;
 } CPU;
 
-void cicloDeInstrucao(CPU &cpu)
+void MOV(CPU &cpu)
 {
-    for (int i = 0; i < 30; i++)
-    {
-        cpu.IR = memory[cpu.PC++] + (memory[cpu.PC++] << 8);
-        printf("PC: 0x%04X, IR: 0x%04X\n", cpu.PC, cpu.IR);
+    int8_t type = cpu.IR >> 11 & 0b1;
+    int8_t Rd = cpu.IR >> 8 & 0b111;
 
-        if (cpu.IR == HALT)
+    if (type == 0)
+    {
+        int8_t Rm = cpu.IR >> 5 & 0b111;
+        printf("MOV R%d, R%d\n", Rd, Rm);
+        cpu.R[Rd] = cpu.R[Rm];
+    }
+    else
+    {
+        int8_t Im = cpu.IR & 0xFF;
+        printf("MOV R%d, #%d\n", Rd, Im);
+        cpu.R[Rd] = Im;
+    }
+}
+
+void ciclo(CPU &cpu)
+{
+    for (int i = 0; memory[cpu.PC]; i++)
+    {
+        cpu.IR = memory[cpu.PC] + (memory[cpu.PC + 1] << 8);
+        cpu.PC += 2;
+        printf("PC: 0x%04X, IR: 0x%04X ", cpu.PC, cpu.IR);
+
+        uint8_t opcode = (cpu.IR >> 12) & 0x0F;
+        printf("OPCODE: %1X\n", opcode);
+
+        if (opcode == 0xF)
         {
+            break;
+        }
+
+        switch (opcode)
+        {
+        case 0x01:
+            MOV(cpu);
+            break;
+        case 0x02:
+            break;
+        default:
             break;
         }
     }
@@ -44,9 +76,9 @@ void carregarMemoria(char *file_name)
     }
 
     std::string line;
+    uint16_t address, data;
     while (std::getline(file, line))
     {
-        uint16_t address, data;
         std::stringstream ss(line);
         char separador;
         if (ss >> std::hex >> address >> separador >> std::hex >> data && separador == ':')
@@ -68,5 +100,10 @@ int main(int argc, char *argv[])
     carregarMemoria(argv[1]);
 
     CPU cpu;
-    cicloDeInstrucao(cpu);
+    ciclo(cpu);
+
+    for (int i = 0; i < 8; i++)
+    {
+        printf("R%d: 0x%04X\n", i, cpu.R[i]);
+    }
 }
