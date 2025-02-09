@@ -20,5 +20,6 @@ typedef struct
 void ciclo(CPU &cpu);
 void MOV(CPU &cpu);
 void STORE(CPU &cpu);
+void LOAD(CPU &cpu);
 
 #endif
