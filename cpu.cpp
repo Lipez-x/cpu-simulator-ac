@@ -1,0 +1,52 @@
+#include "cpu.h"
+#include <cstdio>
+
+extern uint8_t memory[SIZE_MEMORY];
+
+void MOV(CPU &cpu)
+{
+    int8_t type = cpu.IR >> 11 & 0b1;
+    int8_t Rd = cpu.IR >> 8 & 0b111;
+
+    if (type == 0)
+    {
+        int8_t Rm = cpu.IR >> 5 & 0b111;
+        printf("MOV R%d, R%d\n", Rd, Rm);
+        cpu.R[Rd] = cpu.R[Rm];
+    }
+    else
+    {
+        int8_t Im = cpu.IR & 0xFF;
+        printf("MOV R%d, #%d\n", Rd, Im);
+        cpu.R[Rd] = Im;
+    }
+}
+
+void ciclo(CPU &cpu)
+{
+    for (int i = 0; memory[cpu.PC]; i++)
+    {
+        cpu.IR = memory[cpu.PC] + (memory[cpu.PC + 1] << 8);
+        cpu.PC += 2;
+        printf("PC: 0x%04X, IR: 0x%04X ", cpu.PC, cpu.IR);
+
+        uint8_t opcode = (cpu.IR >> 12) & 0x0F;
+        printf("OPCODE: %1X\n", opcode);
+
+        if (opcode == 0xF)
+        {
+            break;
+        }
+
+        switch (opcode)
+        {
+        case 0x01:
+            MOV(cpu);
+            break;
+        case 0x02:
+            break;
+        default:
+            break;
+        }
+    }
+}
