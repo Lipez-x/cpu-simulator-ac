@@ -101,6 +101,15 @@ void ORR(CPU &cpu)
     cpu.R[Rd] = cpu.R[Rm] | cpu.R[Rn];
 }
 
+void NOT(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+
+    printf("NOT R%d, R%d\n", Rd, Rm);
+    cpu.R[Rd] = ~cpu.R[Rm];
+}
+
 void ciclo(CPU &cpu)
 {
     for (int i = 0; memory[cpu.PC]; i++)
@@ -142,6 +151,9 @@ void ciclo(CPU &cpu)
             break;
         case 0x08:
             ORR(cpu);
+            break;
+        case 0x09:
+            NOT(cpu);
             break;
         default:
             break;

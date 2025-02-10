@@ -27,5 +27,6 @@ void SUB(CPU &cpu);
 void MUL(CPU &cpu);
 void AND(CPU &cpu);
 void ORR(CPU &cpu);
+void NOT(CPU &cpu);
 
 #endif
