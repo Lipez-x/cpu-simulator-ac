@@ -53,6 +53,75 @@ void LOAD(CPU &cpu)
     cpu.R[Rd] = data_memory[cpu.R[Rm]];
 }
 
+void ADD(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+    printf("ADD R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] + cpu.R[Rn];
+}
+
+void SUB(CPU &cpu)
+
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+
+    printf("SUB R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] - cpu.R[Rn];
+}
+
+void MUL(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+
+    printf("MUL R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] * cpu.R[Rn];
+}
+
+void AND(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+
+    printf("AND R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] & cpu.R[Rn];
+}
+
+void ORR(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+
+    printf("ORR R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] | cpu.R[Rn];
+}
+
+void NOT(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+
+    printf("NOT R%d, R%d\n", Rd, Rm);
+    cpu.R[Rd] = ~cpu.R[Rm];
+}
+
+void XOR(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+
+    printf("XOR R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] ^ cpu.R[Rn];
+}
+
 void ciclo(CPU &cpu)
 {
     for (int i = 0; memory; i++)
@@ -85,6 +154,27 @@ void ciclo(CPU &cpu)
             break;
         case 0x03:
             LOAD(cpu);
+            break;
+        case 0x04:
+            ADD(cpu);
+            break;
+        case 0x05:
+            SUB(cpu);
+            break;
+        case 0x06:
+            MUL(cpu);
+            break;
+        case 0x07:
+            AND(cpu);
+            break;
+        case 0x08:
+            ORR(cpu);
+            break;
+        case 0x09:
+            NOT(cpu);
+            break;
+        case 0x0A:
+            XOR(cpu);
             break;
         default:
             break;
