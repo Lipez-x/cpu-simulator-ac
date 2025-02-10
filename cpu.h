@@ -11,15 +11,17 @@ typedef struct
     uint16_t IR;
     uint16_t SP = 0x8600;
     uint16_t R[8] = {0};
-    uint8_t C : 1;
-    uint8_t Ov : 1;
-    uint8_t Z : 1;
-    uint8_t S : 1;
+    bool C;
+    bool Ov;
+    bool Z;
+    bool S;
 } CPU;
 
 void ciclo(CPU &cpu);
 void MOV(CPU &cpu);
 void STORE(CPU &cpu);
 void LOAD(CPU &cpu);
+
+void ADD(CPU &cpu);
 
 #endif
