@@ -24,5 +24,6 @@ void LOAD(CPU &cpu);
 
 void ADD(CPU &cpu);
 void SUB(CPU &cpu);
+void MUL(CPU &cpu);
 
 #endif

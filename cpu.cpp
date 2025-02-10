@@ -61,6 +61,7 @@ void ADD(CPU &cpu)
 }
 
 void SUB(CPU &cpu)
+
 {
     uint8_t Rd = cpu.IR >> 8 & 0b111;
     uint8_t Rm = cpu.IR >> 5 & 0b111;
@@ -68,6 +69,16 @@ void SUB(CPU &cpu)
 
     printf("SUB R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] - cpu.R[Rn];
+}
+
+void MUL(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+
+    printf("MUL R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] * cpu.R[Rn];
 }
 
 void ciclo(CPU &cpu)
@@ -100,8 +111,11 @@ void ciclo(CPU &cpu)
         case 0x04:
             ADD(cpu);
             break;
-        case 05:
+        case 0x05:
             SUB(cpu);
+            break;
+        case 0x06:
+            MUL(cpu);
             break;
         default:
             break;
