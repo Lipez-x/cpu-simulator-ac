@@ -81,6 +81,16 @@ void MUL(CPU &cpu)
     cpu.R[Rd] = cpu.R[Rm] * cpu.R[Rn];
 }
 
+void AND(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+
+    printf("AND R%d, R%d, R%d\n", Rd, Rm, Rn);
+    cpu.R[Rd] = cpu.R[Rm] & cpu.R[Rn];
+}
+
 void ciclo(CPU &cpu)
 {
     for (int i = 0; memory[cpu.PC]; i++)
@@ -116,6 +126,9 @@ void ciclo(CPU &cpu)
             break;
         case 0x06:
             MUL(cpu);
+            break;
+        case 0x07:
+            AND(cpu);
             break;
         default:
             break;
