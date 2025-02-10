@@ -1,10 +1,11 @@
 
 #ifndef CPU_H
 #define CPU_H
+#include <cstdio>
+#include <stdint.h>
 
 #define SIZE_MEMORY 0x10000
 
-#include <stdint.h>
 typedef struct
 {
     uint16_t PC = 0x0000;
