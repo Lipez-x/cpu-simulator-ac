@@ -3,6 +3,8 @@
 
 extern uint8_t memory[SIZE_MEMORY];
 extern uint16_t data_memory[SIZE_MEMORY];
+extern uint8_t ultimaInstrucao;
+extern bool fimDoArquivo;
 
 void MOV(CPU &cpu)
 {
@@ -53,8 +55,14 @@ void LOAD(CPU &cpu)
 
 void ciclo(CPU &cpu)
 {
-    for (int i = 0; memory[cpu.PC]; i++)
+    for (int i = 0; memory; i++)
     {
+
+        if (cpu.PC == ultimaInstrucao)
+        {
+            fimDoArquivo = true;
+        }
+
         cpu.IR = memory[cpu.PC] + (memory[cpu.PC + 1] << 8);
         cpu.PC += 2;
         printf("PC: 0x%04X, IR: 0x%04X ", cpu.PC, cpu.IR);
@@ -79,6 +87,11 @@ void ciclo(CPU &cpu)
             LOAD(cpu);
             break;
         default:
+            break;
+        }
+
+        if (fimDoArquivo)
+        {
             break;
         }
     }
