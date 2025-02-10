@@ -23,5 +23,6 @@ void STORE(CPU &cpu);
 void LOAD(CPU &cpu);
 
 void ADD(CPU &cpu);
+void SUB(CPU &cpu);
 
 #endif
