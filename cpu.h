@@ -37,5 +37,6 @@ void ROR(CPU &cpu);
 void ROL(CPU &cpu);
 
 void CMP(CPU &cpu);
+void JMP(CPU &cpu);
 
 #endif

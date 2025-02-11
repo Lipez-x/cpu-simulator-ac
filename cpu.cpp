@@ -162,8 +162,51 @@ void CMP(CPU &cpu)
     int8_t Rn = cpu.IR >> 2 & 0b111;
     printf("CMP R%d, R%d\n", Rm, Rn);
 
-    cpu.Z = cpu.R[Rm] == cpu.R[Rn] ? 1 : 0;
-    cpu.S = cpu.R[Rm] < cpu.R[Rn] ? 1 : 0;
+    cpu.Z = (cpu.R[Rm] == cpu.R[Rn]) ? 1 : 0;
+    cpu.S = (cpu.R[Rm] < cpu.R[Rn]) ? 1 : 0;
+    printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
+}
+
+void JMP(CPU &cpu)
+{
+    int16_t Im = cpu.IR >> 2 & 0x1FF;
+
+    if (Im & 0x100)
+    {
+        Im |= 0xFFE0;
+    }
+
+    if ((cpu.IR & 0b11) == 0b00)
+    {
+        printf("JMP #%X\n", Im);
+        cpu.PC = cpu.PC + Im;
+        printf("PC: 0x#%04X\n", cpu.PC);
+    }
+    else if ((cpu.IR & 0b11) == 0b01)
+    {
+        printf("JEQ #%X\n", Im);
+        if (cpu.Z == 0 && cpu.S == 0)
+        {
+            cpu.PC = cpu.PC + Im;
+            printf("PC: 0x%04X\n", cpu.PC);
+        }
+    }
+    else if ((cpu.IR & 0b11) == 0b10)
+    {
+        printf("JLT #%X\n", Im);
+        if (cpu.Z == 0 && cpu.S == 1)
+        {
+            cpu.PC += Im;
+        }
+    }
+    else if ((cpu.IR & 0b11) == 0b11)
+    {
+        printf("JGT #%X\n", Im);
+        if (cpu.Z == 0 && cpu.S == 0)
+        {
+            cpu.PC += Im;
+        }
+    }
 }
 
 void ciclo(CPU &cpu)
@@ -198,7 +241,10 @@ void ciclo(CPU &cpu)
                 {
                     CMP(cpu);
                 }
-                break;
+            }
+            else
+            {
+                JMP(cpu);
             }
             break;
         case 0x01:
