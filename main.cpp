@@ -56,6 +56,8 @@ int main(int argc, char *argv[])
     for (int i = 0; i < SIZE_MEMORY; i++)
     {
         if (data_memory[i])
-            printf("0x%04X: 0x%04X\n", i, data_memory[i]);
+            printf("%04X: 0x%04X\n", i, data_memory[i]);
     }
+
+    printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }

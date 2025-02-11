@@ -156,6 +156,16 @@ void ROL(CPU &cpu)
     cpu.R[Rd] = (cpu.R[Rm] << 1) | (cpu.R[Rm] >> 15);
 }
 
+void CMP(CPU &cpu)
+{
+    int8_t Rm = cpu.IR >> 5 & 0b111;
+    int8_t Rn = cpu.IR >> 2 & 0b111;
+    printf("CMP R%d, R%d\n", Rm, Rn);
+
+    cpu.Z = cpu.R[Rm] == cpu.R[Rn] ? 1 : 0;
+    cpu.S = cpu.R[Rm] < cpu.R[Rn] ? 1 : 0;
+}
+
 void ciclo(CPU &cpu)
 {
     for (int i = 0; memory; i++)
@@ -172,6 +182,7 @@ void ciclo(CPU &cpu)
 
         uint8_t opcode = (cpu.IR >> 12) & 0x0F;
         printf("OPCODE: %1X\n", opcode);
+        int8_t type = cpu.IR >> 11 & 0b1;
 
         if (opcode == 0xF)
         {
@@ -180,6 +191,16 @@ void ciclo(CPU &cpu)
 
         switch (opcode)
         {
+        case 0x00:
+            if (type == 0)
+            {
+                if ((cpu.IR & 0b11) == 0b11)
+                {
+                    CMP(cpu);
+                }
+                break;
+            }
+            break;
         case 0x01:
             MOV(cpu);
             break;
