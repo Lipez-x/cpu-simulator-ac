@@ -33,5 +33,6 @@ void XOR(CPU &cpu);
 void SHR(CPU &cpu);
 void SHL(CPU &cpu);
 void ROR(CPU &cpu);
+void ROL(CPU &cpu);
 
 #endif
