@@ -30,5 +30,6 @@ void AND(CPU &cpu);
 void ORR(CPU &cpu);
 void NOT(CPU &cpu);
 void XOR(CPU &cpu);
+void SHR(CPU &cpu);
 
 #endif
