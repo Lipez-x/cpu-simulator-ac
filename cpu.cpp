@@ -131,6 +131,15 @@ void SHR(CPU &cpu)
     cpu.R[Rd] = cpu.R[Rm] >> Im;
 }
 
+void SHL(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Im = cpu.IR & 0b1111;
+    printf("SHL R%d, R%d, #%X\n", Rd, Rm, Im);
+    cpu.R[Rd] = cpu.R[Rm] << Im;
+}
+
 void ciclo(CPU &cpu)
 {
     for (int i = 0; memory; i++)
@@ -187,6 +196,9 @@ void ciclo(CPU &cpu)
             break;
         case 0x0B:
             SHR(cpu);
+            break;
+        case 0x0C:
+            SHL(cpu);
             break;
         default:
             break;
