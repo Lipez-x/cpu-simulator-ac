@@ -122,6 +122,40 @@ void XOR(CPU &cpu)
     cpu.R[Rd] = cpu.R[Rm] ^ cpu.R[Rn];
 }
 
+void SHR(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Im = cpu.IR & 0b1111;
+    printf("SHR R%d, R%d, #%X\n", Rd, Rm, Im);
+    cpu.R[Rd] = cpu.R[Rm] >> Im;
+}
+
+void SHL(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Im = cpu.IR & 0b1111;
+    printf("SHL R%d, R%d, #%X\n", Rd, Rm, Im);
+    cpu.R[Rd] = cpu.R[Rm] << Im;
+}
+
+void ROR(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    printf("ROR R%d, R%d\n", Rd, Rm);
+    cpu.R[Rd] = (cpu.R[Rm] >> 1) | (cpu.R[Rm] << 15);
+}
+
+void ROL(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    printf("ROL R%d, R%d\n", Rd, Rm);
+    cpu.R[Rd] = (cpu.R[Rm] << 1) | (cpu.R[Rm] >> 15);
+}
+
 void ciclo(CPU &cpu)
 {
     for (int i = 0; memory; i++)
@@ -175,6 +209,18 @@ void ciclo(CPU &cpu)
             break;
         case 0x0A:
             XOR(cpu);
+            break;
+        case 0x0B:
+            SHR(cpu);
+            break;
+        case 0x0C:
+            SHL(cpu);
+            break;
+        case 0x0D:
+            ROR(cpu);
+            break;
+        case 0x0E:
+            ROL(cpu);
             break;
         default:
             break;
