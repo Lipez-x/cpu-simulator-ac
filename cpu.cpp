@@ -202,7 +202,6 @@ void JMP(CPU &cpu)
         if (cpu.Z == 0 && cpu.S == 0)
         {
             cpu.PC = cpu.PC + Im;
-            printf("PC: 0x%04X\n", cpu.PC);
         }
     }
     else if ((cpu.IR & 0b11) == 0b10)
