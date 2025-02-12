@@ -60,6 +60,11 @@ void ADD(CPU &cpu)
     uint8_t Rn = cpu.IR >> 2 & 0b111;
     printf("ADD R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] + cpu.R[Rn];
+
+    cpu.Z = (cpu.R[Rd] == 0); 
+    cpu.S = (cpu.R[Rd] & 0x80) != 0; 
+    cpu.C = (cpu.R[Rd] > 0xFF); 
+    cpu.Ov = ((cpu.R[Rm] ^ cpu.R[Rn]) & 0x80) == 0 && ((cpu.R[Rm] ^ cpu.R[Rd]) & 0x80) != 0; 
 }
 
 void SUB(CPU &cpu)
@@ -71,6 +76,11 @@ void SUB(CPU &cpu)
 
     printf("SUB R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] - cpu.R[Rn];
+
+    cpu.Z = (cpu.R[Rd] == 0); 
+    cpu.S = (cpu.R[Rd] & 0x80) != 0; 
+    cpu.C = (cpu.R[Rm] >= cpu.R[Rn]); 
+    cpu.Ov = ((cpu.R[Rm] ^ Rn) & 0x80) != 0 && ((cpu.R[Rm] ^ Rd) & 0x80) != 0; 
 }
 
 void MUL(CPU &cpu)
@@ -81,6 +91,11 @@ void MUL(CPU &cpu)
 
     printf("MUL R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] * cpu.R[Rn];
+
+    cpu.Z = (cpu.R[Rd] == 0); 
+    cpu.S = (cpu.R[Rd] & 0x80) != 0; 
+    cpu.C = (cpu.R[Rd] > 0xFF); 
+    cpu.Ov = false; 
 }
 
 void AND(CPU &cpu)
@@ -226,7 +241,7 @@ void POP(CPU &cpu)
 
 void ciclo(CPU &cpu)
 {
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; memory; i++)
     {
 
         if (cpu.PC == ultimaInstrucao)
