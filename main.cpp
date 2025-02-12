@@ -6,6 +6,7 @@
 #define SIZE_MEMORY 0x10000
 uint8_t memory[SIZE_MEMORY];
 uint16_t data_memory[SIZE_MEMORY] = {0};
+
 uint8_t ultimaInstrucao;
 bool fimDoArquivo;
 

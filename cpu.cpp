@@ -180,7 +180,6 @@ void JMP(CPU &cpu)
     {
         printf("JMP #%X\n", Im);
         cpu.PC = cpu.PC + Im;
-        printf("PC: 0x#%04X\n", cpu.PC);
     }
     else if ((cpu.IR & 0b11) == 0b01)
     {
@@ -209,6 +208,14 @@ void JMP(CPU &cpu)
     }
 }
 
+void PUSH(CPU &cpu)
+{
+    uint8_t Rn = cpu.IR >> 2 & 0b11;
+    printf("PSH R%d\n", Rn);
+    data_memory[cpu.SP] = cpu.R[Rn];
+    cpu.SP--;
+}
+
 void ciclo(CPU &cpu)
 {
     for (int i = 0; memory; i++)
@@ -225,7 +232,7 @@ void ciclo(CPU &cpu)
 
         uint8_t opcode = (cpu.IR >> 12) & 0x0F;
         printf("OPCODE: %1X\n", opcode);
-        int8_t type = cpu.IR >> 11 & 0b1;
+        uint8_t type = cpu.IR >> 11 & 0b1;
 
         if (opcode == 0xF)
         {
@@ -240,6 +247,10 @@ void ciclo(CPU &cpu)
                 if ((cpu.IR & 0b11) == 0b11)
                 {
                     CMP(cpu);
+                }
+                else if ((cpu.IR & 0b11) == 0b01)
+                {
+                    PUSH(cpu);
                 }
             }
             else
