@@ -40,5 +40,6 @@ void CMP(CPU &cpu);
 void JMP(CPU &cpu);
 
 void PUSH(CPU &cpu);
+void POP(CPU &cpu);
 
 #endif

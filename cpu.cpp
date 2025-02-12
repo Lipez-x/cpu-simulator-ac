@@ -216,9 +216,17 @@ void PUSH(CPU &cpu)
     cpu.SP--;
 }
 
+void POP(CPU &cpu)
+{
+    uint8_t Rd = cpu.IR >> 8 & 0b111;
+    printf("POP R%d\n", Rd);
+    cpu.SP++;
+    cpu.R[Rd] = data_memory[cpu.SP];
+}
+
 void ciclo(CPU &cpu)
 {
-    for (int i = 0; memory; i++)
+    for (int i = 0; i < 30; i++)
     {
 
         if (cpu.PC == ultimaInstrucao)
@@ -251,6 +259,10 @@ void ciclo(CPU &cpu)
                 else if ((cpu.IR & 0b11) == 0b01)
                 {
                     PUSH(cpu);
+                }
+                else if ((cpu.IR & 0b11) == 0b10)
+                {
+                    POP(cpu);
                 }
             }
             else
