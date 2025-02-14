@@ -94,10 +94,10 @@ void ADD(CPU &cpu)
     cpu.S = (cpu.R[Rd] & 0x80) != 0;
     cpu.C = (cpu.R[Rd] > 0xFF);
     cpu.Ov = ((cpu.R[Rm] ^ cpu.R[Rn]) & 0x80) == 0 && ((cpu.R[Rm] ^ cpu.R[Rd]) & 0x80) != 0;
+    printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }
 
 void SUB(CPU &cpu)
-
 {
     uint8_t Rd = cpu.IR >> 8 & 0b111;
     uint8_t Rm = cpu.IR >> 5 & 0b111;
@@ -109,7 +109,8 @@ void SUB(CPU &cpu)
     cpu.Z = (cpu.R[Rd] == 0);
     cpu.S = (cpu.R[Rd] & 0x80) != 0;
     cpu.C = (cpu.R[Rm] >= cpu.R[Rn]);
-    cpu.Ov = ((cpu.R[Rm] ^ Rn) & 0x80) != 0 && ((cpu.R[Rm] ^ Rd) & 0x80) != 0;
+    cpu.Ov = ((cpu.R[Rm] ^ cpu.R[Rn]) & 0x80) != 0 && ((cpu.R[Rm] ^ cpu.R[Rd]) & 0x80) != 0;
+    printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }
 
 void MUL(CPU &cpu)
@@ -202,12 +203,15 @@ void ROL(CPU &cpu)
 
 void CMP(CPU &cpu)
 {
-    int8_t Rm = cpu.IR >> 5 & 0b111;
-    int8_t Rn = cpu.IR >> 2 & 0b111;
+    uint8_t Rm = cpu.IR >> 5 & 0b111;
+    uint8_t Rn = cpu.IR >> 2 & 0b111;
+    uint8_t Sub = cpu.R[Rm] - cpu.R[Rn];
     printf("CMP R%d, R%d\n", Rm, Rn);
 
     cpu.Z = (cpu.R[Rm] == cpu.R[Rn]) ? 1 : 0;
     cpu.S = (cpu.R[Rm] < cpu.R[Rn]) ? 1 : 0;
+    cpu.C = (cpu.R[Rm] >= cpu.R[Rn]);
+    cpu.Ov = ((cpu.R[Rm] ^ Rn) & 0x80) != 0 && ((cpu.R[Rm] ^ Sub) & 0x80) != 0;
     printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }
 
