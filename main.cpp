@@ -50,22 +50,4 @@ int main(int argc, char *argv[])
 
     CPU cpu;
     ciclo(cpu);
-
-    printf("PC: 0x%04X, SP: 0x%04X\n", cpu.PC, cpu.SP);
-    for (int i = 0; i < 8; i++)
-    {
-        printf("R%d: 0x%04X\n", i, cpu.R[i]);
-    }
-    for (int i = 0; i < SIZE_MEMORY_DATA; i++)
-    {
-        if (memory_accessed[i])
-            printf("%04X: 0x%04X\n", i, (data_memory[i + 1] << 8 | data_memory[i]));
-    }
-    for (int i = 15; i >= 0; --i)
-    {
-
-        printf("%04X: 0x%02X\n", (i + 0x81F1), stack[i]);
-    }
-
-    printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }

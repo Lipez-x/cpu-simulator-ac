@@ -1,4 +1,3 @@
-
 #ifndef CPU_H
 #define CPU_H
 #include <cstdio>
@@ -20,6 +19,7 @@ typedef struct
 } CPU;
 
 void ciclo(CPU &cpu);
+void show(CPU &cpu);
 
 void MOV(CPU &cpu);
 void STORE(CPU &cpu);

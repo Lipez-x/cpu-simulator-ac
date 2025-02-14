@@ -8,6 +8,30 @@ extern uint8_t stack[16];
 extern uint8_t ultimaInstrucao;
 extern bool fimDoArquivo;
 
+void show(CPU &cpu)
+{
+    printf("\n// Registradores \n");
+    printf("PC: 0x%04X, SP: 0x%04X\n", cpu.PC, cpu.SP);
+    for (int i = 0; i < 8; i++)
+    {
+        printf("R%d: 0x%04X\n", i, cpu.R[i]);
+    }
+    printf("\n// Memória de dados\n");
+    for (int i = 0; i < SIZE_MEMORY_DATA; i++)
+    {
+        if (memory_accessed[i])
+            printf("%04X: 0x%04X\n", i, (data_memory[i + 1] << 8 | data_memory[i]));
+    }
+    printf("\n// Pilha\n");
+    for (int i = 15; i >= 0; --i)
+    {
+
+        printf("%04X: 0x%02X\n", (i + 0x81F1), stack[i]);
+    }
+    printf("\n// Flags\n");
+    printf("Ov:%d C:%d Z:%d S:%d\n\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
+}
+
 void MOV(CPU &cpu)
 {
     uint8_t type = cpu.IR >> 11 & 0b1;
@@ -284,6 +308,12 @@ void ciclo(CPU &cpu)
             break;
         }
 
+        if (cpu.IR == 0x0000)
+        {
+            show(cpu);
+            continue;
+        }
+
         switch (opcode)
         {
         case 0x00:
@@ -363,4 +393,5 @@ void ciclo(CPU &cpu)
             break;
         }
     }
+    show(cpu);
 }
