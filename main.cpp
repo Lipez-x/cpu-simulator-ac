@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     for (int i = 15; i >= 0; --i)
     {
 
-        printf("%04X: 0x%02X\n", (i + 0x85F1), stack[i]);
+        printf("%04X: 0x%02X\n", (i + 0x81F1), stack[i]);
     }
 
     printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);

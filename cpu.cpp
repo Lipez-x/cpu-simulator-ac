@@ -231,7 +231,7 @@ void PUSH(CPU &cpu)
 {
     uint8_t Rn = cpu.IR >> 2 & 0b11;
     printf("PSH R%d\n", Rn);
-    uint8_t index = cpu.SP - 0x85F1;
+    uint8_t index = cpu.SP - 0x81F1;
 
     if (index == 0)
     {
@@ -248,7 +248,7 @@ void POP(CPU &cpu)
 {
     uint8_t Rd = cpu.IR >> 8 & 0b111;
     printf("POP R%d\n", Rd);
-    uint8_t index = cpu.SP - 0x85F1;
+    uint8_t index = cpu.SP - 0x81F1;
 
     if (index == 15)
     {
@@ -301,6 +301,10 @@ void ciclo(CPU &cpu)
                 {
                     POP(cpu);
                 }
+                else
+                {
+                    fimDoArquivo = true;
+                }
             }
             else
             {
@@ -350,6 +354,7 @@ void ciclo(CPU &cpu)
             ROL(cpu);
             break;
         default:
+            fimDoArquivo = true;
             break;
         }
 
