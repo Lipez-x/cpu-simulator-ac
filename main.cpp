@@ -6,6 +6,7 @@
 #define SIZE_MEMORY 0x10000
 uint8_t memory[SIZE_MEMORY];
 uint16_t data_memory[SIZE_MEMORY] = {0};
+uint8_t stack[16] = {0};
 
 uint8_t ultimaInstrucao;
 bool fimDoArquivo;
@@ -58,6 +59,11 @@ int main(int argc, char *argv[])
     {
         if (data_memory[i])
             printf("%04X: 0x%04X\n", i, data_memory[i]);
+    }
+    for (int i = 15; i >= 0; --i)
+    {
+
+        printf("%04X: 0x%02X\n", (i + 0x85F1), stack[i]);
     }
 
     printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);

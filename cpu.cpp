@@ -3,6 +3,7 @@
 
 extern uint8_t memory[SIZE_MEMORY];
 extern uint16_t data_memory[SIZE_MEMORY];
+extern uint8_t stack[16];
 extern uint8_t ultimaInstrucao;
 extern bool fimDoArquivo;
 
@@ -61,10 +62,10 @@ void ADD(CPU &cpu)
     printf("ADD R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] + cpu.R[Rn];
 
-    cpu.Z = (cpu.R[Rd] == 0); 
-    cpu.S = (cpu.R[Rd] & 0x80) != 0; 
-    cpu.C = (cpu.R[Rd] > 0xFF); 
-    cpu.Ov = ((cpu.R[Rm] ^ cpu.R[Rn]) & 0x80) == 0 && ((cpu.R[Rm] ^ cpu.R[Rd]) & 0x80) != 0; 
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x80) != 0;
+    cpu.C = (cpu.R[Rd] > 0xFF);
+    cpu.Ov = ((cpu.R[Rm] ^ cpu.R[Rn]) & 0x80) == 0 && ((cpu.R[Rm] ^ cpu.R[Rd]) & 0x80) != 0;
 }
 
 void SUB(CPU &cpu)
@@ -77,10 +78,10 @@ void SUB(CPU &cpu)
     printf("SUB R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] - cpu.R[Rn];
 
-    cpu.Z = (cpu.R[Rd] == 0); 
-    cpu.S = (cpu.R[Rd] & 0x80) != 0; 
-    cpu.C = (cpu.R[Rm] >= cpu.R[Rn]); 
-    cpu.Ov = ((cpu.R[Rm] ^ Rn) & 0x80) != 0 && ((cpu.R[Rm] ^ Rd) & 0x80) != 0; 
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x80) != 0;
+    cpu.C = (cpu.R[Rm] >= cpu.R[Rn]);
+    cpu.Ov = ((cpu.R[Rm] ^ Rn) & 0x80) != 0 && ((cpu.R[Rm] ^ Rd) & 0x80) != 0;
 }
 
 void MUL(CPU &cpu)
@@ -92,10 +93,10 @@ void MUL(CPU &cpu)
     printf("MUL R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] * cpu.R[Rn];
 
-    cpu.Z = (cpu.R[Rd] == 0); 
-    cpu.S = (cpu.R[Rd] & 0x80) != 0; 
-    cpu.C = (cpu.R[Rd] > 0xFF); 
-    cpu.Ov = false; 
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x80) != 0;
+    cpu.C = (cpu.R[Rd] > 0xFF);
+    cpu.Ov = false;
 }
 
 void AND(CPU &cpu)
@@ -226,16 +227,34 @@ void PUSH(CPU &cpu)
 {
     uint8_t Rn = cpu.IR >> 2 & 0b11;
     printf("PSH R%d\n", Rn);
-    data_memory[cpu.SP] = cpu.R[Rn];
-    cpu.SP--;
+    uint8_t index = cpu.SP - 0x85F1;
+
+    if (index == 0)
+    {
+        printf("Stack underflow!\n");
+        return;
+    }
+
+    stack[index] = cpu.R[Rn];
+    stack[--index] = cpu.R[Rn] >> 8;
+    cpu.SP -= 2;
 }
 
 void POP(CPU &cpu)
 {
     uint8_t Rd = cpu.IR >> 8 & 0b111;
     printf("POP R%d\n", Rd);
-    cpu.SP++;
-    cpu.R[Rd] = data_memory[cpu.SP];
+    uint8_t index = cpu.SP - 0x85F1;
+
+    if (index == 15)
+    {
+        printf("Stack overflow!\n");
+        return;
+    }
+
+    index++;
+    cpu.R[Rd] = (stack[index] << 8) | (stack[index + 1]);
+    cpu.SP += 2;
 }
 
 void ciclo(CPU &cpu)
