@@ -2,7 +2,8 @@
 #include <cstdio>
 
 extern uint8_t memory[SIZE_MEMORY];
-extern uint16_t data_memory[SIZE_MEMORY];
+extern uint8_t data_memory[SIZE_MEMORY_DATA];
+extern bool memory_accessed[SIZE_MEMORY_DATA];
 extern uint8_t stack[16];
 extern uint8_t ultimaInstrucao;
 extern bool fimDoArquivo;
@@ -36,6 +37,8 @@ void STORE(CPU &cpu)
         uint8_t Rn = cpu.IR >> 2 & 0b11;
         printf("STORE [R%d], R%X\n", Rm, Rn);
         data_memory[cpu.R[Rm]] = cpu.R[Rn];
+        data_memory[cpu.R[Rm + 1]] = cpu.R[Rn] >> 8;
+        memory_accessed[cpu.R[Rm]] = true;
     }
     else
     {
@@ -43,6 +46,7 @@ void STORE(CPU &cpu)
         uint8_t Im = ((cpu.IR >> 8 & 0b111) << 5) | (cpu.IR & 0b11111);
         printf("STORE [R%d], #%X\n", Rm, Im);
         data_memory[cpu.R[Rm]] = Im;
+        memory_accessed[cpu.R[Rm]] = true;
     }
 }
 
@@ -51,7 +55,7 @@ void LOAD(CPU &cpu)
     uint8_t Rd = cpu.IR >> 8 & 0b111;
     uint8_t Rm = cpu.IR >> 5 & 0b111;
     printf("LOAD R%d, [R%d]\n", Rd, Rm);
-    cpu.R[Rd] = data_memory[cpu.R[Rm]];
+    cpu.R[Rd] = (data_memory[cpu.R[Rm]] | (data_memory[cpu.R[Rm + 1]] << 8));
 }
 
 void ADD(CPU &cpu)
@@ -275,7 +279,7 @@ void ciclo(CPU &cpu)
         printf("OPCODE: %1X\n", opcode);
         uint8_t type = cpu.IR >> 11 & 0b1;
 
-        if (opcode == 0xF)
+        if (cpu.IR == 0xFFFF)
         {
             break;
         }

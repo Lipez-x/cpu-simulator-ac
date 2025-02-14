@@ -5,7 +5,8 @@
 
 #define SIZE_MEMORY 0x10000
 uint8_t memory[SIZE_MEMORY];
-uint16_t data_memory[SIZE_MEMORY] = {0};
+uint8_t data_memory[SIZE_MEMORY_DATA] = {0};
+bool memory_accessed[SIZE_MEMORY_DATA];
 uint8_t stack[16] = {0};
 
 uint8_t ultimaInstrucao;
@@ -55,10 +56,10 @@ int main(int argc, char *argv[])
     {
         printf("R%d: 0x%04X\n", i, cpu.R[i]);
     }
-    for (int i = 0; i < SIZE_MEMORY; i++)
+    for (int i = 0; i < SIZE_MEMORY_DATA; i++)
     {
-        if (data_memory[i])
-            printf("%04X: 0x%04X\n", i, data_memory[i]);
+        if (memory_accessed[i])
+            printf("%04X: 0x%04X\n", i, (data_memory[i + 1] << 8 | data_memory[i]));
     }
     for (int i = 15; i >= 0; --i)
     {
