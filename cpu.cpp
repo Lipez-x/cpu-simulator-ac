@@ -37,7 +37,7 @@ void STORE(CPU &cpu)
         uint8_t Rn = cpu.IR >> 2 & 0b11;
         printf("STORE [R%d], R%X\n", Rm, Rn);
         data_memory[cpu.R[Rm]] = cpu.R[Rn];
-        data_memory[cpu.R[Rm + 1]] = cpu.R[Rn] >> 8;
+        data_memory[cpu.R[Rm] + 1] = cpu.R[Rn] << 8;
         memory_accessed[cpu.R[Rm]] = true;
     }
     else
