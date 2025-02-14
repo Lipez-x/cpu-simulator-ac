@@ -55,7 +55,7 @@ void LOAD(CPU &cpu)
     uint8_t Rd = cpu.IR >> 8 & 0b111;
     uint8_t Rm = cpu.IR >> 5 & 0b111;
     printf("LOAD R%d, [R%d]\n", Rd, Rm);
-    cpu.R[Rd] = (data_memory[cpu.R[Rm]] | (data_memory[cpu.R[Rm + 1]] << 8));
+    cpu.R[Rd] = (data_memory[cpu.R[Rm]] | (data_memory[cpu.R[Rm] + 1] << 8));
 }
 
 void ADD(CPU &cpu)
