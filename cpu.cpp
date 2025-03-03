@@ -23,10 +23,10 @@ void show(CPU &cpu)
             printf("%04X: 0x%04X\n", i, (data_memory[i + 1] << 8 | data_memory[i]));
     }
     printf("\n// Pilha\n");
-    for (int i = 15; i >= 0; --i)
+    for (int i = 15; i >= 0; i -= 2)
     {
 
-        printf("%04X: 0x%02X\n", (i + 0x81F1), stack[i]);
+        printf("%04X: 0x%02X%02X\n", (i + 0x81F1), stack[i - 1], stack[i]);
     }
     printf("\n// Flags\n");
     printf("Ov:%d C:%d Z:%d S:%d\n\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
@@ -40,13 +40,13 @@ void MOV(CPU &cpu)
     if (type == 0)
     {
         uint8_t Rm = cpu.IR >> 5 & 0b111;
-        printf("MOV R%d, R%X\n", Rd, Rm);
+        printf("MOV R%d, R%d\n", Rd, Rm);
         cpu.R[Rd] = cpu.R[Rm];
     }
     else
     {
         uint8_t Im = cpu.IR & 0xFF;
-        printf("MOV R%d, #%X\n", Rd, Im);
+        printf("MOV R%d, #%d\n", Rd, Im);
         cpu.R[Rd] = Im;
     }
 }
@@ -91,9 +91,10 @@ void ADD(CPU &cpu)
     cpu.R[Rd] = cpu.R[Rm] + cpu.R[Rn];
 
     cpu.Z = (cpu.R[Rd] == 0);
-    cpu.S = (cpu.R[Rd] & 0x80) != 0;
-    cpu.C = (cpu.R[Rd] > 0xFF);
-    cpu.Ov = ((cpu.R[Rm] ^ cpu.R[Rn]) & 0x80) == 0 && ((cpu.R[Rm] ^ cpu.R[Rd]) & 0x80) != 0;
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = ((cpu.R[Rm] + cpu.R[Rn]) > 0xFFFF);
+    cpu.Ov = (((cpu.R[Rm] ^ cpu.R[Rn]) & 0x8000) == 0) &&
+             (((cpu.R[Rm] ^ cpu.R[Rd]) & 0x8000) != 0);
     printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }
 
@@ -107,9 +108,11 @@ void SUB(CPU &cpu)
     cpu.R[Rd] = cpu.R[Rm] - cpu.R[Rn];
 
     cpu.Z = (cpu.R[Rd] == 0);
-    cpu.S = (cpu.R[Rd] & 0x80) != 0;
-    cpu.C = (cpu.R[Rm] >= cpu.R[Rn]);
-    cpu.Ov = ((cpu.R[Rm] ^ cpu.R[Rn]) & 0x80) != 0 && ((cpu.R[Rm] ^ cpu.R[Rd]) & 0x80) != 0;
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = (cpu.R[Rm] < cpu.R[Rn]);
+    cpu.Ov = (((cpu.R[Rm] ^ cpu.R[Rn]) & 0x8000) != 0) &&
+             (((cpu.R[Rm] ^ cpu.R[Rd]) & 0x8000) != 0);
+
     printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }
 
@@ -123,9 +126,9 @@ void MUL(CPU &cpu)
     cpu.R[Rd] = cpu.R[Rm] * cpu.R[Rn];
 
     cpu.Z = (cpu.R[Rd] == 0);
-    cpu.S = (cpu.R[Rd] & 0x80) != 0;
-    cpu.C = (cpu.R[Rd] > 0xFF);
-    cpu.Ov = false;
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = ((cpu.R[Rm] * cpu.R[Rn]) > 0xFFFF);
+    cpu.Ov = (((cpu.R[Rm] * cpu.R[Rn]) & 0x8000) != 0) && ((cpu.R[Rm] & 0x8000) == (cpu.R[Rn] & 0x8000));
 }
 
 void AND(CPU &cpu)
@@ -136,6 +139,11 @@ void AND(CPU &cpu)
 
     printf("AND R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] & cpu.R[Rn];
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void ORR(CPU &cpu)
@@ -146,6 +154,11 @@ void ORR(CPU &cpu)
 
     printf("ORR R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] | cpu.R[Rn];
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void NOT(CPU &cpu)
@@ -155,6 +168,11 @@ void NOT(CPU &cpu)
 
     printf("NOT R%d, R%d\n", Rd, Rm);
     cpu.R[Rd] = ~cpu.R[Rm];
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void XOR(CPU &cpu)
@@ -165,6 +183,11 @@ void XOR(CPU &cpu)
 
     printf("XOR R%d, R%d, R%d\n", Rd, Rm, Rn);
     cpu.R[Rd] = cpu.R[Rm] ^ cpu.R[Rn];
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void SHR(CPU &cpu)
@@ -174,6 +197,11 @@ void SHR(CPU &cpu)
     uint8_t Im = cpu.IR & 0b1111;
     printf("SHR R%d, R%d, #%X\n", Rd, Rm, Im);
     cpu.R[Rd] = cpu.R[Rm] >> Im;
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void SHL(CPU &cpu)
@@ -183,6 +211,11 @@ void SHL(CPU &cpu)
     uint8_t Im = cpu.IR & 0b1111;
     printf("SHL R%d, R%d, #%X\n", Rd, Rm, Im);
     cpu.R[Rd] = cpu.R[Rm] << Im;
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void ROR(CPU &cpu)
@@ -191,6 +224,11 @@ void ROR(CPU &cpu)
     uint8_t Rm = cpu.IR >> 5 & 0b111;
     printf("ROR R%d, R%d\n", Rd, Rm);
     cpu.R[Rd] = (cpu.R[Rm] >> 1) | (cpu.R[Rm] << 15);
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void ROL(CPU &cpu)
@@ -199,6 +237,11 @@ void ROL(CPU &cpu)
     uint8_t Rm = cpu.IR >> 5 & 0b111;
     printf("ROL R%d, R%d\n", Rd, Rm);
     cpu.R[Rd] = (cpu.R[Rm] << 1) | (cpu.R[Rm] >> 15);
+
+    cpu.Z = (cpu.R[Rd] == 0);
+    cpu.S = (cpu.R[Rd] & 0x8000) != 0;
+    cpu.C = 0;
+    cpu.Ov = 0;
 }
 
 void CMP(CPU &cpu)
@@ -208,10 +251,11 @@ void CMP(CPU &cpu)
     uint8_t Sub = cpu.R[Rm] - cpu.R[Rn];
     printf("CMP R%d, R%d\n", Rm, Rn);
 
-    cpu.Z = (cpu.R[Rm] == cpu.R[Rn]) ? 1 : 0;
-    cpu.S = (cpu.R[Rm] < cpu.R[Rn]) ? 1 : 0;
-    cpu.C = (cpu.R[Rm] >= cpu.R[Rn]);
-    cpu.Ov = ((cpu.R[Rm] ^ Rn) & 0x80) != 0 && ((cpu.R[Rm] ^ Sub) & 0x80) != 0;
+    cpu.Z = (cpu.R[Rm] == cpu.R[Rn]);
+    cpu.S = (cpu.R[Rm] < cpu.R[Rn]);
+    cpu.C = (cpu.R[Rm] < cpu.R[Rn]);
+    cpu.Ov = (((cpu.R[Rm] ^ cpu.R[Rn]) & 0x8000) != 0) &&
+             (((cpu.R[Rm] ^ Sub) & 0x8000) != 0);
     printf("Ov:%d C:%d Z:%d S:%d\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
 }
 
