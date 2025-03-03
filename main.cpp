@@ -16,6 +16,11 @@ void carregarMemoria(char *file_name)
 {
     std::ifstream file(file_name);
 
+    for (int i = 0; i < SIZE_MEMORY; i++)
+    {
+        memory[i] = 0xFF;
+    }
+
     if (!file)
     {
         std::cout << "Erro ao abir arquivo\n";
