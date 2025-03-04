@@ -276,7 +276,7 @@ void JMP(CPU &cpu)
     else if ((cpu.IR & 0b11) == 0b01)
     {
         printf("JEQ #%X\n", Im);
-        if (cpu.Z == 0 && cpu.S == 0)
+        if (cpu.Z == 1 && cpu.S == 0)
         {
             cpu.PC = cpu.PC + Im;
         }
