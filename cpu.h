@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define SIZE_MEMORY 0x10000
-#define SIZE_MEMORY_DATA 0x81F1
+#define SIZE_MEMORY_DATA 0x8201
 
 typedef struct
 {

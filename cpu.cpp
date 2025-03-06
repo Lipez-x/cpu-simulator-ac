@@ -4,7 +4,6 @@
 extern uint8_t memory[SIZE_MEMORY];
 extern uint8_t data_memory[SIZE_MEMORY_DATA];
 extern bool memory_accessed[SIZE_MEMORY_DATA];
-extern uint8_t stack[16];
 extern uint8_t ultimaInstrucao;
 extern bool fimDoArquivo;
 
@@ -17,16 +16,16 @@ void show(CPU &cpu)
         printf("R%d: 0x%04X\n", i, cpu.R[i]);
     }
     printf("\n// Memória de dados\n");
-    for (int i = 0; i < SIZE_MEMORY_DATA; i++)
+    for (int i = 0; i < 0x81F1; i++)
     {
         if (memory_accessed[i])
             printf("%04X: 0x%04X\n", i, (data_memory[i + 1] << 8 | data_memory[i]));
     }
     printf("\n// Pilha\n");
-    for (int i = 15; i >= 0; i -= 2)
+    for (int i = 0x8200; i >= 0x81F2; i -= 2)
     {
 
-        printf("%04X: 0x%02X%02X\n", (i + 0x81F1), stack[i - 1], stack[i]);
+        printf("%04X: 0x%02X%02X\n", i, data_memory[i - 1], data_memory[i]);
     }
     printf("\n// Flags\n");
     printf("Ov:%d C:%d Z:%d S:%d\n\n", cpu.Ov, cpu.C, cpu.Z, cpu.S);
@@ -270,12 +269,12 @@ void JMP(CPU &cpu)
 
     if ((cpu.IR & 0b11) == 0b00)
     {
-        printf("JMP #%X\n", Im);
+        printf("JMP #%d\n", Im);
         cpu.PC = cpu.PC + Im;
     }
     else if ((cpu.IR & 0b11) == 0b01)
     {
-        printf("JEQ #%X\n", Im);
+        printf("JEQ #%d\n", Im);
         if (cpu.Z == 1 && cpu.S == 0)
         {
             cpu.PC = cpu.PC + Im;
@@ -303,16 +302,15 @@ void PUSH(CPU &cpu)
 {
     uint8_t Rn = cpu.IR >> 2 & 0b11;
     printf("PSH R%d\n", Rn);
-    uint8_t index = cpu.SP - 0x81F1;
 
-    if (index == 0)
+    if (cpu.SP == 0x81F0)
     {
         printf("Stack underflow!\n");
         return;
     }
 
-    stack[index] = cpu.R[Rn];
-    stack[--index] = cpu.R[Rn] >> 8;
+    data_memory[cpu.SP] = cpu.R[Rn];
+    data_memory[cpu.SP - 1] = cpu.R[Rn] >> 8;
     cpu.SP -= 2;
 }
 
@@ -320,17 +318,15 @@ void POP(CPU &cpu)
 {
     uint8_t Rd = cpu.IR >> 8 & 0b111;
     printf("POP R%d\n", Rd);
-    uint8_t index = cpu.SP - 0x81F1;
 
-    if (index == 15)
+    if (cpu.SP == 0x8200)
     {
         printf("Stack overflow!\n");
         return;
     }
 
-    index++;
-    cpu.R[Rd] = (stack[index] << 8) | (stack[index + 1]);
     cpu.SP += 2;
+    cpu.R[Rd] = (data_memory[cpu.SP - 1] << 8) | (data_memory[cpu.SP]);
 }
 
 void ciclo(CPU &cpu)

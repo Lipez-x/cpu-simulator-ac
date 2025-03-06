@@ -7,7 +7,6 @@
 uint8_t memory[SIZE_MEMORY];
 uint8_t data_memory[SIZE_MEMORY_DATA] = {0};
 bool memory_accessed[SIZE_MEMORY_DATA];
-uint8_t stack[16] = {0};
 
 uint8_t ultimaInstrucao;
 bool fimDoArquivo;
